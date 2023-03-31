@@ -1,8 +1,8 @@
-In questo secondo esperimento si vuole studiare il comportamento di un convertitore di tensione switching - SMPC - di tipologia Buck ad \textbf{anello chiuso}. Il circuito è rappresentato in Figura \ref{fig:Circuit2}. Sono stati utilizzati i seguenti componenti:
+Nel secondo esperimento si vuole studiare il comportamento di un convertitore di tensione switching - SMPC - di tipologia Buck ad \textbf{anello chiuso}. Il circuito è rappresentato in Figura \ref{fig:Circuit2}. Sono stati utilizzati i seguenti componenti:
 \begin{itemize}
     \item Circuito RLC:
     \subitem Resistenza di carico $R_L=50\Omega$, ottenuta dal parallelo di due resistenze da $100\Omega,1W$
-    \subitem Induttore $L=680\mu H$, come nel primo esperimento.
+    \subitem Induttore $L=680\mu H$, utilizzata nel primo esperimento.
     \subitem Condensatore $C=20\mu F$
     \item Amplificatore operazionale 1213, codice LT1213
     \item Resistenze varie 
@@ -14,41 +14,60 @@ In questo secondo esperimento si vuole studiare il comportamento di un convertit
     \caption{Schema circuito}
     \label{fig:Circuit2}
 \end{figure}
-Il circuito è alimentato dalla tensione $V_i=+8V$,$V_{CC}=+8V$,$-V_{CC}=0V$ e utilizza il seguente range di tensione di riferimento $V_{o,ref}\in [0,+8]V$
+Il circuito è alimentato dalla tensione $V_i=+8V$,$V_{CC}=+8V$,$-V_{CC}=0V$ e utilizza il seguente intervallo di tensione di riferimento $V_{o,ref}\in [0,+8]V$
 \clearpage
 
 
 \subsection{PRELAB}
 \subsubsection{Dimensionamento del circuito}
+È necessario dimensionare i valori per le resistenze $R_6,R_7$ in modo da avere in uscita al carico la tensione equivalente a $V_{ref}$. 
+Si nota che la presenza del partitore di tensione $R_1=R_2=1k\Omega$ connesso all'uscita modifica il guadagno del circuito ad anello chiuso, inoltre esso fa comparire all'ingresso del controllore PID la tensione $V_o/2$ e quindi bisogna avere al terminale non invertente di LT1213 la tensione di riferimento $V_{ref}/2$.\\Si dimensiona quindi $R_6,R_7$ in modo da avere $V_{ref}/2$:
+\begin{equation*}
+    R_6=R_7=1k\Omega
+\end{equation*}
+Fissato $R_F=R_I=10k\Omega$ si sceglie un valore per i condensatori $C_F,C_I$ in modo da avere un sistema stabile del controllore PID.
+Sono stati scelti i seguenti valori:
+\begin{equation*}
+    C_F=C_I=10nF
+\end{equation*}
+Con questi valori di capacità, il margine di fase della funzione di trasferimento del circuito ad anello chiuso è maggiore di 0°, il che garantisce stabilità al sistema. Come si nota dal diagramma di Bode delle fasi in Figura \ref{fig:Es2BodeCloseLoop}.
 \subsubsection{Diagramma di Bode del filtro RLC}
+In Figura \ref{fig:Es2BodeRLC} è riportato il diagramma di Bode del filtro RLC in catena aperta
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\linewidth]{images/Es2BodeRLC.png}
+    \includegraphics[width=0.7\linewidth]{images/Es2BodeRLC.png}
     \caption{Diagramma di Bode del filtro RLC}
     \label{fig:Es2BodeRLC}
 \end{figure}
+\clearpage
 \subsubsection{Diagramma di Bode del circuito ad anello chiuso}
+In Figura \ref{fig:Es2BodeCloseLoop} è riportato il diagramma del guadagno del circuito ad anello chiuso
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\linewidth]{images/Es2BodeCloseLoop.png}
+    \includegraphics[width=0.7\linewidth]{images/Es2BodeCloseLoop.png}
     \caption{Diagramma di Bode del circuito ad anello chiuso}
     \label{fig:Es2BodeCloseLoop}
 \end{figure}
-\clearpage
 
 
 
 
 
 \subsection{Assemblaggi e settaggi}
-Dopo aver assemblato il circuito, seguendo lo schematico in Figura \ref{fig:Circuit2SPICE}. Abbiamo collegato un condensatore da $C=10\mu F$ in parallelo all'alimentazione OP amp (tra $+V_{CC}$ e $-V_{CC}$) in modo da ridurre in maniera più che apprezzabile i disturbi dell'amplificatore.
+Il circuito è stato modificato come segue:
+\begin{itemize}
+    \item Si è usato il canale 1 del generatore di alimentazione per fornire $V_{ref}$
+    \item Sono stati usati i canali 2 e 3 per fornire le tensioni positive e negative che alimentano l'amplificatore operazionale
+    \item Sono stati impostati +Vcc = 8V e -Vcc = 0V
+\end{itemize}    
+Dopo aver assemblato il circuito, seguendo lo schematico in Figura \ref{fig:Circuit2SPICE}. È stato collegato un condensatore da $C=10\mu F$ in parallelo all'alimentazione OP amp (tra $+V_{CC}$ e $-V_{CC}$) in modo da ridurre in maniera più che apprezzabile i disturbi dell'amplificatore.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\linewidth]{images/Circuit2SPICE.png}
     \caption{Schematico SPICE del circuito}
     \label{fig:Circuit2SPICE}
 \end{figure}
-Tramite il generatore di funzioni abbiamo fornito al terminale invertente del secondo operazionale 1213 il seguente segnale:
+Tramite il generatore di funzioni è stato fornito al terminale invertente del secondo operazionale 1213 il seguente segnale:
 \begin{itemize}
     \item Forma d'onda: triangolare
     \item Simmetria: 50\%
@@ -66,12 +85,12 @@ Tale segnale viene usato dal comparatore operazionale per generare l'onda quadra
 
 
 \subsection{Risultati}
-Impostando la tensione di riferimento a $V_{ref}=4V$ abbiamo fatto delle misure dei segnali in vari punti del circuito, di cui riportiamo i relativi grafici dei segnali misurati:
+Impostando la tensione di riferimento a $V_{ref}=4V$ sono state svolte le misure dei segnali in vari punti del circuito,  i cui grafici sono riportati in seguito:
 \begin{itemize}
     \item In Figura \ref{fig:OutVoltage2} la tensione di uscita.
     \item In Figura \ref{fig:GateDriverINP} il segnale all'ingresso INP del gate driver LTC7001.
     \item In Figura \ref{fig:SawtoothSignal} il segnale onda triangolare simmetrica. 
-    \item In Figura \ref{fig:CompareSawtoothINP} un confronto tra il segnale INP e l'onda triangolare.
+    \item In Figura \ref{fig:CompareSawtoothINP} il confronto tra il segnale INP e l'onda triangolare.
     \item In Figura \ref{fig:U1Output} il segnale all'uscita del primo amplificatore U1.
 \end{itemize}
 \begin{figure}[H]
@@ -106,7 +125,7 @@ Impostando la tensione di riferimento a $V_{ref}=4V$ abbiamo fatto delle misure 
 \end{figure}
 \clearpage
 \subsubsection{Dipendenza tensione di uscita - $V_{ref}$}
-In relazione alla tensione di riferimento impostata $V_{ref}$ abbiamo misurato la tensione di uscita $V_o$ e il duty cycle del segnale di ingresso al gate driver (pin INP). Abbiamo riportato le misure in Tabella \ref{tab:Tab2.3.1}
+In relazione alla tensione di riferimento impostata $V_{ref}$ sono stati misurati la tensione di uscita $V_o$ e il duty cycle del segnale di ingresso al gate driver (pin INP). I dati sono riportati in Tabella \ref{tab:Tab2.3.1}
 \begin{table}[H]
     \centering
     \begin{tabular}{|c|c|c|}
@@ -125,7 +144,7 @@ In relazione alla tensione di riferimento impostata $V_{ref}$ abbiamo misurato l
     \caption{Dati raccolti}
     \label{tab:Tab2.3.1}
 \end{table}
-Abbiamo poi successivamente plottato i risultati con MATLAB e abbiamo prodotto i seguenti grafici in Figura \ref{fig:Ris2TableVoVref} per quanto riguarda la relazione tra la tensione di uscita e il riferimento di tensione e in Figura \ref{fig:Ris2TableVrefDTC} la relazione tra duty cycle e riferimento di tensione.
+I risultati sono stati successivamente plottati con MATLAB generando il  grafico in Figura \ref{fig:Ris2TableVoVref}, riguardante la relazione tra la tensione di uscita e il riferimento di tensione, e il grafico in Figura \ref{fig:Ris2TableVrefDTC} che mostra la relazione tra duty cycle e riferimento di tensione.
 \begin{figure}[H]
     \centering
     \begin{minipage}{.5\linewidth}
@@ -141,4 +160,4 @@ Abbiamo poi successivamente plottato i risultati con MATLAB e abbiamo prodotto i
         \label{fig:Ris2TableVrefDTC}
     \end{minipage}
 \end{figure}
-Notiamo dal grafico in Figura \ref{fig:Ris2TableVoVref} che la tensione, a parte per una leggera anomalia a 4.5V, ha andamento lineare. Dal grafico in Figura \ref{fig:Ris2TableVrefDTC} notiamo che l'andamento del duty cycle è perfettamente lineare. Questi due grafici confermano l'andamento teorico del nostro circuito.
+Si nota dal grafico in Figura \ref{fig:Ris2TableVoVref} che la tensione, a parte per una leggera anomalia a 4.5V, ha andamento lineare. Dal grafico in Figura \ref{fig:Ris2TableVrefDTC} si osserva che l'andamento del duty cycle è perfettamente lineare. I due grafici confermano l'andamento teorico del nostro circuito.
