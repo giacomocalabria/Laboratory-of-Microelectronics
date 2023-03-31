@@ -3,22 +3,23 @@ clear all;
 clc;
 workspace;
 
-L = 6.8e-4;
+L = 680e-6;
 R = 50;
-C = 2.0e-5;
+C = 20e-6;
 
 a = L/R;
 b = L*C;
 
+V = 8;
+
 Gvd = tf(1,[b, a, 1]);
 
 W = 5;
-V = 8;
 
-Gpwm = tf(V,W);
+Gpwm = 8/5;
 
-Rf = 1e4;
-Ri = 1e4;
+Rf = 10000;
+Ri = 10000;
 
 Cf = 1e-8;
 Ci = 1e-8;
@@ -28,7 +29,12 @@ k = - Rf / Ri;
 tau1 = Rf * Cf;
 tau2 = Ri * Ci;
 
-Gr = tf([k*tau1*tau2, k*(tau1+tau2), k],tau1);
+Gr = tf([0.0001, 2, 10000],[1 0]);
 
-bode(Gr*Gpwm*Gvd);
+bode(Gr*k*Gpwm*Gvd);
 grid on;
+hold on;
+
+margin (Gr*k*Gpwm*Gvd);
+grid on;
+hold off
