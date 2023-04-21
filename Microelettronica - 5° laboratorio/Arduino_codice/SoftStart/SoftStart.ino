@@ -1,8 +1,8 @@
 const int buttonPin = 2; // the number of the pushbutton pin
-const int ledPin =  13; // the number of the LED pin
+const int ledPin =  12; // the number of the LED pin
 
 bool buttonState = HIGH; // variable for reading the pushbutton status
-int lastButtonState = HIGH; // variable for storing the last button state
+int lastButtonState = LOW; // variable for storing the last button state
 
 int timeToFade = 2000; // time in milliseconds to fade from min to max brightness
 
@@ -13,11 +13,13 @@ void setup() {
     pinMode(buttonPin, INPUT);
     // initialize the LED state as low
     analogWrite(ledPin,0);
+    Serial.begin(9600);
 }
 
 void loop(){
     // read the state of the pushbutton value:
     buttonState = digitalRead(buttonPin);
+    Serial.println(buttonState);
     delay(5);
     if(buttonState){ // check if the pushbutton is pressed.
         // if it is, the buttonState is HIGH:

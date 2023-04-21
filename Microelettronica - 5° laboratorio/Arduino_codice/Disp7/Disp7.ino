@@ -26,6 +26,6 @@ void loop(){
         for(int i=0; i<7; i++){
             digitalWrite(segPin[i], numbers[num][i]);
         }
-        delay(1000);
+        delay(500);
     }
 }

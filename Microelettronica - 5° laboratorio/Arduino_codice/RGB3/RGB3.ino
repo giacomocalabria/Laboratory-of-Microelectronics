@@ -3,13 +3,15 @@ int GreenLedPin = 11; // Green LED is connected to digital pin 11
 int BlueLedPin = 10;  // Blue LED is connected to digital pin 10
 
 int PotPin = A0; // Potentiometer for RGB control is connected to analog pin A0
-int LuxPin = A1; // Potentiometer for brightness control is connected to analog pin A0  
+int LuxPin = A2; // Potentiometer for brightness control is connected to analog pin A0  
 
 int RedLedBrightness = 0; // Red LED brightness
 int GreenLedBrightness = 0; // Green LED brightness
 int BlueLedBrightness = 0; // Blue LED brightness
 
-int K = 0.75;
+int Brightness = 0;
+
+int K = 0.7478;
 
 void setup(){
     pinMode(RedLedPin, OUTPUT); // Set Red LED pin as output
@@ -25,19 +27,31 @@ void loop(){
         RedLedBrightness = 255;
         GreenLedBrightness = 0;
         BlueLedBrightness = 0;
-    } else if(PotValue < 341){
-        RedLedBrightness = 255 - PotValue*K;
+    } 
+    
+    
+    else if(PotValue < 341){
+        RedLedBrightness = 255 - PotValue*0.7478;
         GreenLedBrightness = 0;
-        BlueLedBrightness = PotValue*K;
-    } else if(PotValue < 682){
+        BlueLedBrightness = PotValue*0.7478;
+    } 
+    
+    
+    else if(PotValue < 682){
         RedLedBrightness = 0;
-        GreenLedBrightness = 512 - PotValue*K;
-        BlueLedBrightness = PotValue*K - 255;
-    } else if(PotValue < 1023){
-        RedLedBrightness = PotValue*K - 512;
-        GreenLedBrightness = 765 - PotValue*K;
+        GreenLedBrightness = PotValue*0.7478 - 255;
+        BlueLedBrightness = 510 - PotValue*0.7478;
+    } 
+    
+    
+    else if(PotValue < 1023){
+        RedLedBrightness = PotValue*0.7478 - 510;
+        GreenLedBrightness = 765 - PotValue*0.7478;
         BlueLedBrightness = 0;
-    } else {
+    } 
+    
+    
+    else {
         RedLedBrightness = 255;
         GreenLedBrightness = 0;
         BlueLedBrightness = 0;
@@ -45,20 +59,27 @@ void loop(){
 
     int LuxValue = analogRead(LuxPin); // Read potentiometer value
 
-    Brightness = Brightness * LuxValue / 1023; // Scale brightness to LuxValue
+    Brightness = map(LuxValue, 0, 1023, 0, 100); // Scale brightness to LuxValue
+
+    RedLedBrightness = RedLedBrightness * Brightness /100;
+    GreenLedBrightness = GreenLedBrightness * Brightness /100;
+    BlueLedBrightness =  BlueLedBrightness * Brightness /100;
 
     // Set LED brightness
-    analogWrite(RedLedPin, RedLedBrightness * Brightness); 
-    analogWrite(GreenLedPin, GreenLedBrightness * Brightness);
-    analogWrite(BlueLedPin, BlueLedBrightness * Brightness);
+    analogWrite(RedLedPin, RedLedBrightness); 
+    analogWrite(GreenLedPin, GreenLedBrightness);
+    analogWrite(BlueLedPin, BlueLedBrightness);
 
-    if(Serial.available()){
-        Serial.print("RED: ");
-        Serial.println(RedLedBrightness);
-        Serial.print("GREEN: ");
-        Serial.println(GreenLedBrightness);
-        Serial.print("BLUE: ");
-        Serial.println(BlueLedBrightness);
-        delay(1);
-    }
+    /*Serial.print("Valore potenziometro rgb ");
+    Serial.println(PotValue);
+    Serial.print("Valore potenziometro lux ");
+    Serial.println(Brightness);
+    Serial.print("RED: ");
+    Serial.println(RedLedBrightness);
+    Serial.print("GREEN: ");
+    Serial.println(GreenLedBrightness);
+    Serial.print("BLUE: ");
+    Serial.println(BlueLedBrightness);*/
+    delay(1);
+    
 }

@@ -1,8 +1,8 @@
 In questo primo esperimento si vuole dimensionare, costruire e studiare un amplificatore in classe A con specchio di corrente. Il circuito è rappresentato in Figura \ref{fig:Circuit1} ed è composto da tre blocchi principali:
 \begin{itemize}\label{ch:Spiegazione1}
-    \item Il primo stadio a sinistra è un buffer, connesso a una rete $RC$ ($R_1$ e $C_1$), che ha lo scopo di filtrare la componente continua del segnale $V_{in}$ (che – una volta amplificata – potrebbe danneggiare l’altoparlante).
+    \item Il primo stadio a sinistra è un buffer, connesso a una rete $RC$ ($R_1$ e $C_1$), che ha lo scopo di filtrare la componente continua del segnale $V_{in}$ (che, una volta amplificata, potrebbe danneggiare l’altoparlante).
     \item Il secondo amplificatore operazionale è connesso in configurazione invertente, e serve a controllare il volume. Il volume massimo è limitato dalla presenza della resistenza $R_2$.
-    \item Il terzo stadio (stadio di uscita) è un amplificatore in classe A, alimentato da uno specchio di corrente. I due transistor dello specchio sono bipolari di potenza e – per ottenere prestazioni ottimali – dovrebbero avere caratteristiche simili tra loro. 
+    \item Il terzo stadio (stadio di uscita) è un amplificatore in classe A, alimentato da uno specchio di corrente. I due transistor dello specchio sono bipolari di potenza e - per ottenere prestazioni ottimali - dovrebbero avere caratteristiche simili tra loro. 
 \end{itemize}
 Sono stati utilizzati i seguenti componenti:
 \begin{itemize}
@@ -42,11 +42,13 @@ Considerato lo specchio di corrente in Figura \ref{fig:CurrentMirror1}. Per prim
     \label{fig:CurrentMirror1}
 \end{figure}
 \noindent Data la disponibilità del laboratorio si è poi scelto di utilizzare una resistenza da $8\text{ }\Omega,2\text{ W}$.\\\\
-La resistenza $R_2$ è utilizzata per limitare il volume massimo del circuito ed evitare il surriscaldamento dei transistor. Il suo valore è stato determinato per limitare il guadagno dello stadio invertente ($V_A/V_F$) al valore massimo di 26.0 dB, come imposto dalle specifiche di progetto.
+La resistenza $R_2$ è utilizzata per limitare il volume massimo del circuito ed evitare il surriscaldamento dei transistor. La specifica di progetto impone di limitare il guadagno dello stadio invertente ($V_A/V_F$) al valore massimo di 26.0 dB, quindi con l'ausilio delle formule seguenti
+
 \begin{equation}
     (A_v)_{\text{dB}} = 20\log_{10}{A_v}\quad\text{e}\quad A_v = -\frac{R_{var}}{R_2}
 \end{equation}
-Da cui abbiamo ricavato il valore di $R_2$ che risulta pari a $501.25\text{ }\Omega$, in laboratorio è stata utilizzata una resistenza da $500\text{ }\Omega$.
+si è ricavato il valore di $R_2$ che risulta pari a $501.25\text{ }\Omega$. In laboratorio è stata utilizzata una resistenza da $500\text{ }\Omega$.
+
 \subsection{Analisi in frequenza del circuito - prelab}
 Infine è stata è stata calcolata la frequenza di taglio del filtro RC in ingresso.
 \begin{equation}
@@ -60,14 +62,14 @@ Il diagramma di Bode della funzione di trasferimento $V_F/V_{in}$ è riportato i
     \label{fig:Bode1}
 \end{figure}
 \subsection{Risultati laboratorio: prima parte}
-Dopo aver montato lo specchio di corrente (Figura \ref{fig:CurrentMirror1}) sulla breadboard, lo si è polarizzato a $-V_{CC}=-3\text{ V}$ e abbiamo misurato con il multimetro la corrente sulle resistenze $R_S$ e $R_L$
+Dopo aver montato lo specchio di corrente (Figura \ref{fig:CurrentMirror1}) sulla breadboard, lo si è polarizzato a $-V_{CC}=-3\text{ V}$ e sono state misurate con il multimetro le correnti sulle resistenze $R_S$ e $R_L$
 \begin{equation*}
     I_{R_S}=0.28\text{ mA}\quad I_{R_L}=0.27\text{ mA}
 \end{equation*}
 Si può riscontrare una minima differenza fra i due valori di corrente, data dalle tolleranze tra i componenti.
 \clearpage
 \subsection{Risultati laboratorio: seconda parte}
-Successivamente si è proceduto ad analizzare lo stadio di filtraggio ed amplificazione del segnale. Per questa parte è stato scollegato lo specchio di corrente per evitare l'inutile riscaldamento dei transistor durante le misure. Abbiamo quindi montato il filtro e il preamplificatore in Figura \ref{fig:PreAmp1}
+Successivamente si è proceduto ad analizzare lo stadio di filtraggio ed amplificazione del segnale. Per questa parte è stato scollegato lo specchio di corrente per evitare l'inutile riscaldamento dei transistor durante le misure. Quindi sono stati montati il filtro e il preamplificatore in Figura \ref{fig:PreAmp1}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{images/PreAmp1.png}
@@ -81,13 +83,13 @@ In seguito è stato collegato il connettore a "T" BNC all'uscita del generatore;
     \caption{Schema di collegamento della strumentazione}
     \label{fig:PreAmpCircuit1}
 \end{figure}
-\noindent Abbiamo impostato il generatore di funzioni per fornire in ingresso al circuito il segnale:
+\noindent Si è impostato il generatore di funzioni per fornire in ingresso al circuito il segnale:
 \begin{itemize}
     \item Forma d'onda: sinusoidale
     \item Frequenza: variabile tra 1 Hz e 1000 Hz
     \item Ampiezza: $100\text{ mV}$ picco-picco
 \end{itemize}
-Il potenziometro $R_{var}$ è stato regolato in modo di avere il massimo guadagno, che corrisponde ad avere il potenziometro a $10\text{ k}\Omega$. Quindi stata fornita l'alimentazione $\pm V_{cc}=\pm3\text{ V}$ all'integrato e abbiamo misurato con l'oscilloscopio il segnale di uscita del circuito alle varie frequenze di ingresso. Riportiamo in Tabella \ref{tab:Ris1} le misure effettuate e il guadagno$\left|V_A/V_{in}\right|_{dB}$ del circuito.
+Il potenziometro $R_{var}$ è stato regolato in modo di avere il massimo guadagno, che corrisponde ad avere il potenziometro a $10\text{ k}\Omega$. Quindi è stata fornita l'alimentazione $\pm V_{cc}=\pm3\text{ V}$ all'integrato e è stato misurato con l'oscilloscopio il segnale di uscita del circuito alle varie frequenze di ingresso. Si riporta in Tabella \ref{tab:Ris1} le misure effettuate e il guadagno$\left|V_A/V_{in}\right|_{dB}$ del circuito.
 \begin{table}[H]
     \centering
     \begin{tabular}{|c|c|c|}
@@ -107,7 +109,7 @@ Il potenziometro $R_{var}$ è stato regolato in modo di avere il massimo guadagn
     \caption{Misura del guadagno $\left|V_A/V_{in}\right|_{dB}$}
     \label{tab:Ris1}
 \end{table}
-Il diagramma di Bode in Figura \ref{fig:Bode2} è tracciato a partire dai dati in Tabella \ref{tab:Ris1} è stato confrontato con l'andamento teorico calcolato nella Sezione \ref{ch:Prelab1}, si nota che il valore $R_2$ scelto permette effettivamente di limitare il guadagno del circuito a $26.0\text{ dB}$. Inoltre il diagramma in Figura \ref{fig:Bode1} è stato tracciato considerando il solo filtro, con relativo buffer e non lo stadio di amplificazione; questo giustifica il discostamento dal diagramma i Bode in Figura \ref{fig:Bode2}.
+Il diagramma di Bode in Figura \ref{fig:Bode2}, tracciato a partire dai dati in Tabella \ref{tab:Ris1}, è stato confrontato con l'andamento teorico calcolato nella Sezione \ref{ch:Prelab1}, si nota che il valore $R_2$ scelto permette effettivamente di limitare il guadagno del circuito a $26.0\text{ dB}$. Inoltre il diagramma in Figura \ref{fig:Bode1} è stato tracciato considerando il solo filtro, con relativo buffer e non lo stadio di amplificazione; questo giustifica il discostamento dal diagramma i Bode in Figura \ref{fig:Bode2}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{images/Bode2.png}
@@ -116,23 +118,23 @@ Il diagramma di Bode in Figura \ref{fig:Bode2} è tracciato a partire dai dati i
 \end{figure}
 \clearpage
 \subsection{Risultati laboratorio: terza parte}
-È stato collegato lo stadio in classe A al filtro, come indicato in figura \ref{fig:Circuit1}. Il circuito è stato connesso all'alimentazione, al generatore di segnale e all'altoparlante.\\\\
-Al circuito è stato applicato in ingresso il segnale con le seguente caratteristiche
+Lo stadio in classe A è stato collegato al filtro, come indicato in figura \ref{fig:Circuit1}. Il circuito è stato connesso all'alimentazione, al generatore di segnale e all'altoparlante.\\\\
+Il segnale applicato in ingresso ha le seguenti caratteristiche
 \begin{itemize}
     \item Forma d'onda: sinusoidale
     \item Frequenza: 330 Hz (nota Mi)
     \item Ampiezza: $100\text{ mV}$ picco-picco
 \end{itemize}
-Abbiamo regolato il potenziometro del volume $R_{var}$ in modo da raggiungere un'ampiezza di $1\text{ } V_{pp}$ sul segnale di uscita.\\\\
-Abbiamo impostato l'oscilloscopio per misurare il segnale di ingresso $V_{in}$ e di uscita $V_{out}$. Riportiamo in Figura \ref{fig:scope_4} la schermata dell'oscilloscopio con i due segnali
+Il potenziometro del volume $R_{var}$ è stato regolato in modo da raggiungere un'ampiezza di $1\text{ } V_{pp}$ sul segnale di uscita.\\\\
+L'oscilloscopio è stato impostato in modo da misurare il segnale di ingresso $V_{in}$ e di uscita $V_{out}$. Si riporta in Figura \ref{fig:scope_4} la schermata dell'oscilloscopio con i due segnali
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{images/scope_4.png}
     \caption{Segnale in ingresso e in uscita dall'amplificatore}
     \label{fig:scope_4}
 \end{figure}
-Non siamo riusciti ad arrivare a $1\text{ } V_{pp}$ in quanto le componenti non ce lo permettevano. Infatti pur portando il potenziometro a fondo scala il segnale di uscita $V_{out}$ è rimasto a $1.9812\text{ } V_{pp}$.\\\\
-Abbiamo poi misurato i segnali $V_{out} \text{ e } V_{B,Q1}$. Abbiamo riportato in Figura \ref{fig:scope_5} la schermata di acquisizione in modalità "normale" e in Figura \ref{fig:scope_6} in modalità XY con l'intento misurare la differenza tra i due segnali.
+Non si è arrivato a $1\text{ } V_{pp}$ in quanto le componenti non lo permettevano. Infatti si può vedere che pur portando il potenziometro a fondo scala il segnale di uscita $V_{out}$ è rimasto a $1.9812\text{ } V_{pp}$.\\\\
+Poi sono stati misurati i segnali $V_{out} \text{ e } V_{B,Q1}$. In Figura \ref{fig:scope_5} è riportata la schermata di acquisizione in modalità "normale" e in Figura \ref{fig:scope_6} la schermata di acquisizione in modalità XY, con l'intento di misurare la differenza tra i due segnali.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{images/scope_5.png}
@@ -145,11 +147,12 @@ Abbiamo poi misurato i segnali $V_{out} \text{ e } V_{B,Q1}$. Abbiamo riportato 
     \caption{Segnali $V_{out} \text{ e } V_{B,Q1}$ in modalità XY}
     \label{fig:scope_6}
 \end{figure}
-Dalla Figura \ref{fig:scope_6} possiamo ben apprezzare che la differenza tra i due segnali è costante in tutto il periodo, infatti in modalità XY (Figura \ref{fig:scope_6}) abbiamo ottenuto una retta. Come si poteva facilmente prevedere la differenza è pari a $V_{be}$.
+Dalla Figura \ref{fig:scope_5} si può ben apprezzare che la differenza tra i due segnali è costante in tutto il periodo, infatti in modalità XY (Figura \ref{fig:scope_6}) si è ottenuta una retta. Come si poteva facilmente prevedere la differenza è pari a $V_{be}$. Analizzando la Figura \ref{fig:scope_5} notiamo che in corrispondenza dello zero del segnale 1 (asse X corrispondente a $V_{out}$) abbiamo un offset del segnale 2 (asse X corrispondente a $V_{B,Q1}$) pari a circa $\sim +700\text{ mV}$, che è appunto la differenza tra i due segnali.
 \subsection{Risultati laboratorio: ultima parte}
-Infine si è stimata l'efficienza del circuito in queste condizioni
+Infine si è stimata l'efficienza del circuito in queste condizioni, la $V_{OP}$ è stata misurata pari a $0.
+2766\text{ V}$ da cui abbiamo poi ricavato
 \begin{equation}
-    \eta=\frac{\text{load power}}{\text{supply power}}=\frac{1}{2}\frac{V_{OP}^2}{R_L}\frac{1}{VV_{CC}}=\frac{1}{4}\frac{V_{OP}^2}{IR_LV_{CC}}=\dots
+    \eta=\frac{\text{load power}}{\text{supply power}}=\frac{1}{2}\frac{V_{OP}^2}{R_L}\frac{1}{2V_{CC}I}=\frac{1}{4}\frac{V_{OP}^2}{IR_LV_{CC}}=0.7969\%
 \end{equation}
 Si può apprezzare come l'amplificatore in classe A sia praticamente esente da distorsioni ma soffre di una efficienza bassissima, questo si è notato anche durante gli esperimenti in quanto i componenti del finale di potenza si sono particolarmente surriscaldati.\\\\
-Si conclude l'esperienza connettendo un dispositivo con jack a 3.5mm all'uscita del circuito, tuttavia l'altoparlante non funzionava correttamente quindi si è deciso di usare una resistenza da 8$\Omega$. Si utilizzata tale resistenza anche nelle esperienze successive in sostituzione dell'altoparlante.
+Si conclude l'esperienza connettendo un dispositivo con jack a 3.5mm all'uscita del circuito, tuttavia l'altoparlante non funzionava correttamente quindi si è deciso di usare una resistenza da 8$\Omega$. Tale resistenza è stata utilizzata anche nelle esperienze successive in sostituzione dell'altoparlante.

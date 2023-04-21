@@ -6,7 +6,7 @@ In questo esperimento si vuole studiare un amplificare in classe AB. Il circuito
     \label{fig:CircuitFac4}
 \end{figure}
 I due diodi PN (polarizzati dalle resistenze $R_3$ e $R_4$) creano una differenza di potenziale circa uguale a $0.6 V$ tra il segnale di ingresso e la base dei transistor $Q_1$ e $Q_2$. Di conseguenza, basta che il segnale di ingresso superi di poco la tensione nulla perché uno dei due transistor di uscita entri in conduzione. Rispetto allo stadio in classe B, questo schema presenta una distorsione di crossover trascurabile.
-\subsubsection{Dimensionamento circuito}
+\subsection{Dimensionamento circuito}
 Si è scelto i valori di $R_3$ e $R_4$ in modo tale da da garantire una corrente di $1 mA$ sui diodi $D_1$ e $D_2$ (con tensione di ingresso nulla).\\
 Si è scelto quindi
 \begin{equation*}
@@ -28,7 +28,7 @@ Il generatore di forma d'onda è stato impostato con il seguente segnale:
     \item Ampiezza iniziale: $1V$ picco-picco
     \item Frequenza: $220Hz$ (nota La)
 \end{itemize}
-Abbiamo impostato l'oscilloscopio per misurare il segnale di ingresso e di uscita. Riportiamo in Figura \ref{fig:scope_15} la schermata dell'oscilloscopio con i due segnali
+L'oscilloscopio è stato impostato in modo da misurare il segnale di ingresso e di uscita. Si riporta in Figura \ref{fig:scope_15} la schermata dell'oscilloscopio con i due segnali
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{images/scope_15.png}
@@ -43,4 +43,23 @@ Attraverso i cursori dell'oscilloscopio è stata misurata la distorsione di cros
     \label{fig:scope_16}
 \end{figure}
 \section{Conclusioni}
-Commentare brevemente i risultati ottenuti nei tre esperimenti; confrontare i tre stadi amplificatori in termini di prestazioni e efficienza (a livello teorico)
+Le esperienze di laboratorio hanno lo scopo di introdurre gli amplificatori audio di classe A, B e AB; in particolare la distorsione di crossover e il rendimento dei circuiti. Gli amplificatori di potenza sono classificati in base alla forma d’onda della corrente di collettore del transistor di uscita, che viene generata quando un segnale sinusoidale è applicato all’ingresso.\\
+\begin{itemize}
+    \item L'amplificatore in classe A è caratterizzato da una importante dissipazione di potenza nei transistor sotto forma di calore e l'efficienza è pari a
+\begin{equation}
+    \eta=\frac{\text{load power}}{\text{supply power}}=\frac{1}{2}\frac{V_{OP}^2}{R_L}\frac{1}{2V_{CC}I}=\frac{1}{4}\frac{V_{OP}^2}{IR_LV_{CC}}
+\end{equation}
+
+Dal momento che $V_{Op} < V_{CC}$, e $V_{Op} < I*R_L$, l'efficienza massima si ottiene quando $V_{Op}=V_{CC}=I*R_L$, che è pari al 25\%.
+
+    \item L'amplificatore in classe B è caratterizzato da un intervallo di tensioni di ingresso centrato nell'origine in cui la tensione di uscita è pari a zero, definita distorsione di crossover nel caso in cui l’ingresso del circuito sia sinusoidale. Questa regione è stata verificata nell'esperienza 2. L'efficienza massima è pari a 
+\begin{equation}
+    \eta=\frac{\pi}{4} = 78.5\%
+\end{equation}
+valore sensibilmente più grande rispetto all'amplificatore di classe A.
+\begin{itemize}
+    \item Nell'esperienza 3 si è utilizzato un amplificatore operazionale ad alto guadagno retroazionato negativamente per ridurre la distorsione di crossover. Si è potuto constatare che le modifiche sono state efficaci.
+\end{itemize}
+\item Lo stadio AB è stato utilizzato nell'esperienza facoltativa. Esso si comporta in maniera molto simile allo stadio push-pull
+(classe B), con la differenza che per bassi valori di $V_I$ entrambi i transistor conducono una piccola corrente. Tale corrente di polarizzazione comporta un maggiore consumo di potenza rispetto allo stadio in classe B.
+\end{itemize}
