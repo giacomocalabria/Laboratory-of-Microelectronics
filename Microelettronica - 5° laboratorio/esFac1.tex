@@ -19,13 +19,21 @@ Le resistenze $R_1$ e $R_2$ sono state dimensionate in modo da ottenere:
     \item Tensione in ingresso all’Arduino pari a $3.3\text{ V}$ 
     \item Una resistenza totale di $200\text{ k}\Omega$
 \end{itemize}
-Quindi sono state scelte
+Il sensore \textit{MQ-3} viene alimentato dalla tensione di 5 V. Abbiamo alimentato il sensore e misurato la tensione di uscita del sensore, che risulta essere 4.64 V. Volendo ottenere ai capi di $R_2$ la tensione di 3.3 V abbiamo dimensionato il partitore di tensione come segue:
+\begin{equation}
+    \begin{cases}
+        R_1+R_2=200\text{ k}\Omega\\
+        4.64\text{V}\cdot\frac{R_2}{R_1+R_2}=3.3\text{ V}
+    \end{cases}
+    \implies R_1=58\text{ k}\Omega\quad R_2=142\text{ k}\Omega
+\end{equation}
+Quindi sono state utilizzate le resistenze
 \begin{equation*}
     R_1 = 56 \text{ k} \Omega\quad R_2 = 150 \text{ k} \Omega
 \end{equation*}
-Successivamente, sono state dimensionate le resistenze $R_0=\dots=R_n$, sapendo che la massima corrente erogata dai pin digitali è $3\text{ mA}$ e la tensione operativa dei singoli LED della LED bar è $2\text{ V}$  [controllare!!]
+Successivamente, sono state dimensionate le resistenze $R_0=\dots=R_n$, sapendo che la massima corrente erogata dai pin digitali è $3\text{ mA}$. Sapendo che i LED del display hanno tensione operativa pari a $V_{ON}=2.3\text{ V}$ abbiamo scelto le resistenze
 \begin{equation*}
-    R_0=\dots=R_n = 470 \text{ k} \Omega
+    R_i=\frac{V_{CC}-V_{ON}}{3\text{ mA}}=333.33\Omega\implies R_0=\dots=R_n = 470\Omega
 \end{equation*}
 \subsection{Codice}
 Infine si è scritto il codice necessario per realizzare l’etilometro. Si vuole che le luci della LED bar si accendano in accordo al valore letto dal sensore. L’obiettivo è di avere 10 luci accese quando la concentrazione è massima e 1 luce accesa quando la concentrazione è minima.
@@ -52,4 +60,4 @@ void loop(){
     }
 }
 \end{lstlisting}
-Abbiamo verificato il corretto funzionamento del programma avvicinando un batuffolo di cotone imbevuto di alcool al sensore.
+Abbiamo verificato il corretto funzionamento del programma avvicinando un batuffolo di cotone imbevuto di alcool al sensore e osservando la reazione del circuito sulla LED bar.

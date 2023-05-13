@@ -24,11 +24,19 @@ La tensione nominale dei tre diodi LED utilizzati, ricavata dal datasheet vale
 \begin{equation*}
     V_{ON.R}=2.1\text{ V}\quad V_{ON.G}=3.1\text{ V}\quad V_{ON.B}=3.1\text{ V}
 \end{equation*}
-Si vuole ora dimensionare le resistenze di base dei transistor in modo che la corrente erogata dai pin digitali sia pari a $2.5\text{ mA}$, si considera per i calcoli che il transistor abbia $V_{BE}=0.7\text{ V}$
+Si vuole ora dimensionare le resistenze di base dei transistor in modo che la corrente erogata dai pin digitali sia pari a $2.5\text{ mA}$, si considera per i calcoli che il transistor abbia $V_{BE}=0.7\text{ V}$, quindi con 
+\begin{equation}
+    R_B=\frac{V_{CC}-V_{BE}}{2.5\text{ mA}}=1040\text{ }\Omega
+\end{equation}
+si sono quindi scelti i valori delle resistenze di base sulla base dei componenti disponibili in laboratorio
 \begin{equation*}
-    R_{B.R}=1\text{ k$\Omega$}\quad R_{B.G}=1\text{ k$\Omega$}\quad R_{B.B}=1\text{ k$\Omega$}
+    R_{B.R}=R_{B.G}=R_{B.B}=1\text{ k$\Omega$}
 \end{equation*}
-Nell'ipotesi che i transistor funzionino in saturazione, si dimensionano le resistenze di collettore dei tre BJT in modo che la corrente sui LED sia pari a $7 \text{ mA}$.
+Nell'ipotesi che i transistor funzionino in saturazione, si dimensionano le resistenze di collettore dei tre BJT in modo che la corrente sui LED sia pari a $7 \text{ mA}$, quindi con 
+\begin{equation}
+    R_{C.x}=\frac{V_{CC}-V_{ON.x}}{7\text{ mA}}
+\end{equation}
+si sono quindi scelti i valori delle resistenze di collettore sulla base dei componenti disponibili in laboratorio
 \begin{equation*}
     R_{C.R}=180\text{ $\Omega$}\quad R_{C.G}=33\text{ $\Omega$}\quad R_{C.B}=33\text{ $\Omega$}
 \end{equation*}
@@ -58,19 +66,22 @@ Dapprima è stata misurata la caduta di tensione base-emettitore dei tre transis
 \end{equation*}
 Si è misurata anche la corrente erogata dalle uscite digitali
 \begin{equation*}
-    I_{pin10}=2.46\text{ mA}\quad I_{pin11}=2.47\text{ mA}\quad V_{pin12}=2.1\text{ mA}
+    I_{pin12}=2.1\text{ mA}\quad I_{pin11}=2.47\text{ mA} \quad I_{pin10}=2.46\text{ mA} 
 \end{equation*}
 La tensione di funzionamento misurata dei tre LED è
 \begin{equation*}
     V_{ON.R}=1.99\text{ V}\quad V_{ON.G}=2.876\text{ V}\quad V_{ON.B}=2.932\text{ V}
 \end{equation*}
-Si nota che questi risultati non sono esattamente quelli del datasheet !!!!!\\
-Infine si misura la corrente che scorre sui tre LED
+Notiamo che le misure delle tensioni di conduzione dei vari LED si discostano dai valori tabulati dal datasheet. Infine si misura la corrente che scorre sui tre LED
 \begin{equation*}
     I_{R}=6.97\text{ mA}\quad V_{G}=14.63\text{ mA}\quad V_{B}=12.71\text{ mA}
 \end{equation*}
-Qual è il motivo per cui questi valori di corrente differiscono da quello scelto in fase di progetto (7 mA)?
-(non abbiamo preso i valori di resistenza calcolati, bensì i più vicini in laboratorio) !!!!!
+Tali valori si discostano da quelli teorici per vari motivi tra cui:
+\begin{itemize}
+    \item Il dimensionamento delle resistenze è stato fatto sui valori di tensione di conduzione dei vari LED del datasheet e non su quelli misurati.
+    \item Le resistenze stesse hanno delle tolleranze e abbiamo preso i valori di resistenza più prossimi a quelli calcolati.
+    \item Le tensioni base-emettitore non sono costanti a 0.7 V. Lo stesso vale per la caduta in conduzione $V_{CE}$
+\end{itemize}
 \subsection{Codice - 2}
 L’ingresso analogico \textbf{A0}, a seconda della posizione del potenziometro $R_{var}$, legge valori compresi tra 0 e 1023. Si vuole  definire un algoritmo che – al ruotare del potenziometro – cambi la combinazione di colori sul LED RGB in maniera graduale. La modalità con cui cambiano i colori è espressa dalla Figura \ref{fig:RGBScale}
 \begin{figure}[H]
@@ -88,7 +99,11 @@ const int BlueLedPin = 10;    // Blue LED to digital pin 10
 const int PotPin = A0;  // Pot. for RGB control to analog pin A0
 
 const float K = 0.7478; // approx 255/341
-
+// ...
+\end{lstlisting}
+\clearpage
+\begin{lstlisting}[frame=single, language=Arduino]
+// ...
 int RedLedBright = 0;   // Red LED brightness
 int GreenLedBright = 0; // Green LED brightness
 int BlueLedBright = 0;  // Blue LED brightness
@@ -98,9 +113,7 @@ void setup(){
     pinMode(GreenLedPin, OUTPUT);   // Set Green LED pin as output
     pinMode(BlueLedPin, OUTPUT);    // Set Blue LED pin as output
 }
-\end{lstlisting}
-\clearpage
-\begin{lstlisting}[frame=single, language=Arduino]
+
 void loop(){
     int PotValue = analogRead(PotPin);  // Read potentiometer value
 
@@ -132,6 +145,7 @@ void loop(){
     analogWrite(BlueLedPin, BlueLedBright);   
 }
 \end{lstlisting}
+\clearpage
 L'aggiunta della lettura avviene aggiungendo la seguente riga nel \texttt{void setup()} che serve per inizializzare la connessione seriale
 \begin{lstlisting}[frame=single, language=Arduino]
 void setup(){   [...]
@@ -144,23 +158,18 @@ Serial.println("RED: %d GREEN: %d BLUE: %d", RedLedBright, GreenLedBright, BlueL
 \end{lstlisting}
 E' possibile apprezzare il funzionamento del circuito dal video al \href{https://mediaspace.unipd.it/media/Esperimento+2/1_y2jgm47p}{seguente link}
 \subsection{Codice - 3}
-Nell'ultima parte è stato connesso un secondo potenziometro al pin analogico \textbf{A1} e il programma è stato modificato in modo che questo secondo potenziometro permetta di regolare l’intensità luminosa complessiva della luce emessa dal LED RGB\\\\
-Si riporta in seguito le modifiche apportate al codice
+Nell'ultima parte è stato connesso un secondo potenziometro al pin analogico \textbf{A1} e il programma è stato modificato in modo che questo secondo potenziometro permetta di regolare l’intensità luminosa complessiva della luce emessa dal LED RGB.
 \begin{lstlisting}[frame=single, language=Arduino]
 const int LuxPin = A2;  // Pot. for brightness control to analog pin A0 
 
 int TotBright = 0;
 
-/*
-    ************* VOID SETUP *************
-*/
+//************* VOID SETUP *************
 
 void loop(){
     int PotValue = analogRead(PotPin);  // Read potentiometer value
-    
-    /*
-        ************* RGB ALGORITHM *************
-    */
+
+    //************* RGB ALGORITHM *************
     
     int LuxValue = analogRead(LuxPin);  // Read potentiometer value
     TotBright = map(LuxValue, 0, 1023, 0, 100);
@@ -172,9 +181,7 @@ void loop(){
     // Set LED brightness
     analogWrite(RedLedPin, RedLedBright); 
     analogWrite(GreenLedPin, GreenLedBright);
-    analogWrite(BlueLedPin, BlueLedBright);
-
-    Serial.println("RED: %d GREEN: %d BLUE: %d", RedLedBright, GreenLedBright, BlueLedBright);    
+    analogWrite(BlueLedPin, BlueLedBright);  
 }
 \end{lstlisting}
 E' possibile apprezzare il funzionamento del circuito dal video al \href{https://mediaspace.unipd.it/media/Esperimento+2.1/1_ewlxzlyv}{seguente link}

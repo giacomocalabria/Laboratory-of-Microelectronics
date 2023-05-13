@@ -13,9 +13,9 @@ Il circuito riportato in Figura \ref{fig:Circuit3} è alimentato mediante porta 
 \end{figure}
 I vari LED del display a 7 segmenti sono collegati ai pin digitali \textbf{12\dots6}
 \subsection{Dimensionamento circuito - prelab}
-Si è calcolato il valore delle resistenze $R_i$ che permette di ottenere una corrente di 3 mA su ciascun LED. Sapendo che i LED del display hanno tensione operativa pari a $V_{ON}=...\text{ V}$
+Si è calcolato il valore delle resistenze $R_i$ che permette di ottenere una corrente di 3 mA su ciascun LED. Sapendo che i LED del display hanno tensione operativa pari a $V_{ON}=2.5\text{ V}$ abbiamo scelto le resistenze
 \begin{equation*}
-    R_1=\dots=R_7=1\text{ k}\Omega, 0.25\text{ W}
+    R_i=\frac{V_{CC}-V_{ON}}{3\text{ mA}}=266.66\Omega\implies R_1=\dots=R_7=330\text{ }\Omega, 0.25\text{ W}
 \end{equation*}
 \clearpage
 \subsection{Codice}

@@ -2,7 +2,8 @@ Si vuole realizzare mediante Arduino un circuito che rilevi l’intensità della
 \begin{itemize}
     \item Resistenze $R_1$, $R_2$, $R_3$ da determinare, 0.25 W.
     \item LED 5 mm,  codice \textit{C503BRANCA0B0AA1}, Cree 
-    \item Fotodiodo IR/visibile, codice \textit{P2N2222AG}, ON semiconductor
+    \item Fotodiodo IR/visibile, codice \textit{SFG203}, OSRAM
+    \item Transistor NPN, codice \textit{P2N2222AG}, ON semiconductor
     \item Integrato operazionale a doppia uscita 6002, codice \textit{MCP 6002}
     \item Scheda Arduino DUE
 \end{itemize}
@@ -13,19 +14,26 @@ Il circuito riportato in Figura \ref{fig:Circuit4} è alimentato mediante porta 
     \caption{Schema circuito}
     \label{fig:Circuit4}
 \end{figure}
-La lettura del sensore di illuminazione, all'uscita dell'operazionale, viene fatta dal pin analogico \textbf{A0}, il LED è collegato al pin digitale \textbf{12}.
-[FUNZIONAMENTO DEL CIRCUITO, $V_0$ vale...]
+La lettura del sensore di illuminazione, all'uscita dell'operazionale, viene fatta dal pin analogico \textbf{A0}, il LED è collegato al pin digitale \textbf{12}.\\\\
+Il circuito presenta un primo stadio dato dall'amplificatore operazionale, in cui si predispone il segnale emesso dal fotodiodo per la scheda Arduino; infatti, il segnale del fotodiodo è una variazione in corrente, mentre il segnale per la scheda Arduino deve essere una variazione di tensione, opportunamente adattato. All'uscita dell'operazionale $V_0$ troveremo quindi un segnale variabile in tensione proporzionale alla luminosità ambientale. In base a 
+\begin{equation}
+    V_0=\frac{R_1}{I_{\text{fotodiodo}}}
+\end{equation}
 \clearpage
-\subsection{Dimensionamento circuito e analisi}
-Mediante il multimetro da banco è stata misurata la corrente generata dal fotodiodo in condizioni di illuminazione ambientale. 
-\begin{equation*}
-    I_{fotodiodo}= \text{ 1.1 } \mu\text{A}
-\end{equation*}
+\subsection{Dimensionamento circuito}
 Le resistenze sono state dimensionate in modo da ottenere
 \begin{itemize}
     \item Tensione di uscita $V_0$ pari a circa 1 V (10\% errore max) in presenza di luce ambientale
     \item Corrente massima sul LED pari a 20 mA
 \end{itemize}
+Mediante il multimetro da banco è stata misurata la corrente generata dal fotodiodo in condizioni di illuminazione ambientale. 
+\begin{equation*}
+    I_{\text{fotodiodo}}= \text{ 1.1 } \mu\text{A}
+\end{equation*}
+In tal modo si è potuto dimensionare la resistenza di guadagno nel primo stadio di amplificazione:
+\begin{equation}
+    R_1=\frac{V_0}{I_{\text{fotodiodo}}}=0.909\text{ M}\Omega
+\end{equation}
 Quindi sono state utilizzate le resistenze
 \begin{equation*}
     R_1 = 1\text{ M}\Omega, R_2 = 1\text{ k}\Omega, R_3 = 68\text{ }\Omega
@@ -42,7 +50,7 @@ E' possibile apprezzare il funzionamento del circuito dal video al \href{https:/
 Il sensore è sensibile all'oscillazione della luce ambientale (50Hz), infatti come vediamo in Figura \ref{fig:scope_1} andando ad analizzare l'uscita del circuito con l'oscilloscopio in accoppiamento AC notiamo che vi è la presenza di un oscillazione del segnale di uscita dal circuito a frequenze prossime ai 50 Hz.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{images/scope_1.png}
+    \includegraphics[width=0.7\linewidth]{images/scope_1.png}
     \caption{Dettaglio in accoppiamento AC del segnale di tensione $V_0$}
     \label{fig:scope_1}
 \end{figure}
