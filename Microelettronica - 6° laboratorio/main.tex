@@ -1,0 +1,60 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{xparse}
+\usepackage{hyperref}
+\usepackage{amssymb}
+\usepackage{verbatim}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\usepackage{xspace}
+\cfoot{}
+\lfoot{Università degli Studi di Padova, Laboratorio di Microelettronica, AA 2022-2023}
+\rfoot{\thepage}
+
+%\hypersetup{
+%    colorlinks=true,
+%    linkcolor=blue,
+%    filecolor=magenta,      
+%    urlcolor=cyan,
+%    pdftitle={Overleaf Example},
+%    pdfpagemode=FullScreen,
+%    }
+
+\usepackage{listings}
+\include{arduinoLanguage}
+
+\title{Esperienza di laboratorio\\\textbf{Arduino DUE\\Display LCD e sensori}}
+\author{Gruppo A6\\Giacomo Calabria - 2007964\\Daniele Venturini - 1195858}
+\date{19 May 2023}
+
+\begin{document}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.75\linewidth]{images/IMG-20230519-WA0006.jpg}
+    \end{figure}
+    \maketitle
+    \tableofcontents
+    \clearpage
+    
+    \section*{INTRODUZIONE}
+    \input{Introduction}
+    \clearpage
+    
+    \section{Primo esperimento}
+    \input{es1}
+    \clearpage
+    
+    \section{Secondo esperimento}
+    \input{es2}
+    \clearpage
+    
+    \section{Terzo esperimento}
+    \input{esFac1}
+\end{document}

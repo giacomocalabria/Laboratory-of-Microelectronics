@@ -1,3 +1,23 @@
+Nel secondo esperimento si vuole realizzare una semplice stazione di monitoraggio ambientale basata su scheda Arduino, display TFT, sensore analogico di umidità e sensori digitali $I^2C$ di temperatura e luminosità.  
+
+
+
+Per questo esperimento sono stati utilizzati i seguenti componenti:
+\begin{itemize}
+    \item Sensore di temperatura analogico, codice \textit{TMP36}, Analog Devices
+    \item Sensore di umidità analogico, codice \textit{HIH-5030-001}, Honeywell
+    \item Sensore di temperatura digitale, codice \textit{DS1621}, Maxim
+    \item Sensore di luce ambientale, codice \textit{TSL2561}, TAOS
+    \item Display TFT 3.5" 320x480, \textit{HX8357} Adafruit
+    \item Scheda Arduino DUE
+    \item Breadboard e cavi
+    \item Interruttore
+\end{itemize}
+Il circuito è alimentato mediante porta USB del PC, la quale eroga circa $(\sim 5 V)$. 
+La scheda Arduino due ha due bus $I^2C$, utilizzeremo i pin 20(SDA) e 21(SCL).
+\subsection{Codice - interfaccia grafica}
+Per il funzionamento del Display HX8357 con Arduino è necessario importare le librerie \texttt{Adafruit\_HX8357.h}, \texttt{Adafruit\_GFX.h} e \texttt{SPI.h}. Per comunicare con i dispositivi $I^2C$ è necessario utilizzare la libreria \texttt{Wire.h}. 
+\begin{lstlisting}[frame=single, language=Arduino]
 #include <SPI.h>
 #include <Wire.h>
 #include "Adafruit_GFX.h"
@@ -16,14 +36,17 @@ Adafruit_HX8357 tft = Adafruit_HX8357(TFT_CS, TFT_DC, -1);
 // TFT_RST set to -1 to tie it to Arduino's reset
 
 #define buttonPin 2
-
-bool pulsante_precedente_alto = false;
+\end{lstlisting}
+Variabili globali
+\begin{lstlisting}[frame=single, language=Arduino]
+bool pulsante_precedente_alto = LOW;
 bool stateButton = LOW;
 
 int stato = 0;
-int stato_precedente = 9;
-float temeperatura_precedente_analog;
-
+int stato_precedente = 0;
+float temperatura_precedente_analog = 0;
+\end{lstlisting}
+\begin{lstlisting}[frame=single, language=Arduino]
 void setup(){
     analogReadResolution(12);
     Wire.begin();
@@ -49,6 +72,7 @@ void setup(){
     Wire.write(0x02);
     Wire.endTransmission();
 
+    // configurazione del Display TFT
     tft.begin();
     tft.setRotation(3);
     tft.fillScreen(HX8357_BLACK);
@@ -56,13 +80,16 @@ void setup(){
 
     attachInterrupt(digitalPinToInterrupt(2),change_state,RISING);
 }
-
+\end{lstlisting}
+Funzione interrupt
+\begin{lstlisting}[frame=single, language=Arduino]
 void change_state(){
   stato++;
   if(stato >= 4)
     stato = 0;
 }
-
+\end{lstlisting}
+\begin{lstlisting}[frame=single, language=Arduino]
 void loop(){
     switch(stato){
         case 0:{
@@ -124,32 +151,37 @@ void loop(){
     }
     delay(500);
 }
-
-
-
-/*
-    Lettura della temperatura dal sensore analogico TMP36
-*/
-
-float AnalogTemperature(int pin) {
-  float analogValue = analogRead(pin);
-  float temperature = ((analogValue * (3.3/4095.0)) - 0.5) / 0.01;  //OK
-  return temperature;
+\end{lstlisting}
+\clearpage
+\subsection{Codice - lettura sensori}
+Qui di seguito riportiamo le funzioni che leggono i dati dai vari sensori. Per le letture dai sensori analogici abbiamo scelto di impostare il DAC di Arduino Due a 12 bit, in modo da avere una risoluzione maggiore con 4096 livelli
+\begin{lstlisting}[frame=single, language=Arduino, caption = Lettura dal sensore TMP36, label = lst:AnalogTemp]
+int AnalogTemperature(int pin) {
+    float analogValue = analogRead(pin);
+    float temperatura = (analogValue - 155) *330.0/4095.0; //12 bit DAC
+    return temperatura;
 }
-
-/*
-    Lettura della temperatura dal sensore digitale di temperatura DS1621
-*/
-
-float DigitalTemperature(){
+\end{lstlisting}
+Per ricavare il valore di umidità e correggerlo in base alla temperatura dal sensore a abbiamo utilizzato le formule fornite dal datasheet del componente
+\begin{lstlisting}[frame=single, language=Arduino]
+int AnalogHumidity(int pin) {
+    float analogValue = analogRead(pin);
+    float rhvoltage = (analogValue/4095.0)*3.3; // 12 bit DAC
+    float umidita = ((rhvoltage/3.3)-0.1515)/0.00636;
+    umidita = umidita/(1.0546-0.00216*AnalogTemperature(A0));
+    return umidita;
+}
+\end{lstlisting}
+\begin{lstlisting}[frame=single, language=Arduino]
+int DigitalTemperature(){
     int firstByte;
     int secondByte;
     float temp = 0;
 
-    Wire.beginTransmission(TEMP_DEV_ID);
+    Wire.beginTransmission(DEV_ID);
     Wire.write(0xAA); // Temperature register   
     Wire.endTransmission();
-    Wire.requestFrom(TEMP_DEV_ID, 2); // request 2 bytes from slave device
+    Wire.requestFrom(DEV_ID, 2); // request 2 bytes from slave device
 
     firstByte = Wire.read(); // read first byte
     secondByte = Wire.read(); // read second byte
@@ -162,41 +194,29 @@ float DigitalTemperature(){
 
     return temp;
 }
-
-/*
-    Lettura dal sensore di umidità analogico HIH-5030-001, Honeywell
-*/
-
-float AnalogHumidity(int pin) {
-    float analogValue = analogRead(pin);
-    float rhvoltage = (analogValue/4095.0)*3.3; // Usiamo DAC a 12 bit -> 4096 valori
-    float umidita = ((rhvoltage/3.3)-0.1515)/0.00636; // Formula dal datasheet del sensore di umidità analogico 
-    umidita = umidita/(1.0546-0.00216*AnalogTemperature(A0)); // Correzione temperatura umidità relativa (formula dal datasheet)
-    return umidita;
-}
-
-/*
-    Lettura dal sensore di luce digitale TSL2561
-*/
-
+\end{lstlisting}
+\begin{lstlisting}[frame=single, language=Arduino]
 int DigitalLight(){
     byte firstByte, secondByte;
     int lux = 0;
 
-    Wire.beginTransmission(LIGHT_DEV_ID);
+    Wire.beginTransmission(DEV_ID2);
     Wire.write(0x8C); // Temperature register
     Wire.endTransmission();
-    Wire.requestFrom(LIGHT_DEV_ID, 1);
+    Wire.requestFrom(DEV_ID2, 1);
 
     firstByte = Wire.read(); // read first byte
 
-    Wire.beginTransmission(LIGHT_DEV_ID);
+    Wire.beginTransmission(DEV_ID2);
     Wire.write(0x8D); // Temperature register
     Wire.endTransmission();
-    Wire.requestFrom(LIGHT_DEV_ID, 1);
+    Wire.requestFrom(DEV_ID2, 1);
 
     secondByte = Wire.read(); // read second byte
 
-    lux = 256 * int(secondByte) + int(firstByte); // convert the two bytes to int
+    lux = 256 * int(secondByte) + int(firstByte); 
+    // convert the two bytes to int
     return lux;
 }
+\end{lstlisting}
+E' possibile apprezzare il funzionamento del circuito dal video al \href{https://mediaspace.unipd.it/media/Esperimento+2.1/1_ewlxzlyv}{seguente link errato}

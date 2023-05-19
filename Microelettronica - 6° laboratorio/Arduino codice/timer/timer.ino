@@ -1,96 +1,116 @@
-#include <Adafruit_GFX.h>
-#include <Adafruit_HX8357.h>
 #include <SPI.h>
+#include "Adafruit_GFX.h"
+#include "Adafruit_HX8357.h"
 
-#define TFT_CLK 13
-#define TFT_MISO 12
-#define TFT_MOSI 11
 #define TFT_CS 10
 #define TFT_DC 9
-#define TFT_RST 8
 
-Adafruit_HX8357 tft = Adafruit_HX8357(TFT_CS, TFT_DC, TFT_RST, TFT_CLK, TFT_RST, TFT_MISO);
+Adafruit_HX8357 tft = Adafruit_HX8357(TFT_CS, TFT_DC,-1); 
+// TFT_RST set to -1 to tie it to Arduino's reset
 
 #define buttonPin 2
 
-int buttonState = HIGH;
-int lastButtonState = HIGH;
+int buttonState = LOW;
+int lastButtonState = LOW;
 
 unsigned long startTime = 0;
-unsigned long elapsedTime = 0;
 
 int stato = 0;
+int reset = 0;
 
 void setup() {
+  Serial.begin(9600);
   tft.begin();
   tft.setRotation(3);
   tft.fillScreen(HX8357_BLACK);
-  tft.setTextColor(HX8357_WHITE);
-  tft.setTextSize(2);
-  
+  tft.setTextColor(HX8357_GREEN);
+  tft.setTextSize(8);
+  tft.setCursor(100,0);
+  tft.println("TIMER");
+  tft.setTextColor(HX8357_BLUE);
+  tft.setCursor(100, 80);
+  tft.print("0.00 s");
+  tft.setCursor(20, 180);
+  tft.setTextColor(HX8357_RED);
+  tft.setTextSize(5);
+  tft.print("Press to Start");
+
   pinMode(buttonPin, INPUT);
 }
 
-void loop() {
+void loop(){
   buttonState = digitalRead(buttonPin);
-  
-  switch (stato) {
-    case 0:
-      if (buttonState == LOW && lastButtonState == HIGH) {
-        // Button pressed, start measuring time
-        stato = 1;
-        startTime = millis();
-        tft.fillScreen(HX8357_BLACK);
-        tft.setCursor(50, 100);
-        tft.print("Press to Start");
-      }
-      break;
-      
-    case 1:
-      if (buttonState == HIGH && lastButtonState == LOW) {
-        // Button released, stop measuring time
-        stato = 2;
-        elapsedTime = millis() - startTime;
-        tft.fillScreen(HX8357_BLACK);
-        tft.setCursor(50, 100);
-        tft.print("Release to Stop");
-      }
-      break;
-      
-    case 2:
-      if (buttonState == LOW && lastButtonState == HIGH) {
-        // Button pressed, reset timer and go back to state 0
-        stato = 0;
-        tft.fillScreen(HX8357_BLACK);
-        tft.setCursor(50, 100);
-        tft.print("Press to Reset");
-      }
-      break;
-  }
-  
-  lastButtonState = buttonState;
-  
-  if (stato == 1) {
-    // Update timer display every 50ms
-    unsigned long currentTime = millis();
-    if (currentTime - startTime >= 50) {
-      startTime = currentTime;
-      updateTimerDisplay();
-    }
-  }
-}
 
-void updateTimerDisplay() {
-  unsigned long centiseconds = (millis() - startTime) / 10;
-  unsigned long seconds = centiseconds / 100;
-  centiseconds %= 100;
-  
-  tft.fillScreen(HX8357_BLACK);
-  tft.setCursor(100, 100);
-  tft.print(String(seconds));
-  tft.print(".");
-  if (centiseconds < 10) {
-    tft.print("0");
+  if (buttonState == HIGH && lastButtonState == LOW && stato == 0){
+    lastButtonState = buttonState;
+    stato = 1;
+    
+    if(startTime == 0){
+      startTime = millis();
+    }
+    
+    tft.fillRect(0, 60, 480, 320, HX8357_BLACK);
+    tft.setCursor(20, 180);
+    tft.setTextSize(5);
+    tft.setTextColor(HX8357_RED);
+    tft.print("Release to Stop");
   }
-  tft.print(String(centiseconds));
+  if (buttonState == LOW && lastButtonState == HIGH){
+    lastButtonState = buttonState;
+
+    tft.fillRect(0, 60, 480, 320, HX8357_BLACK);
+    tft.setCursor(20, 180);
+    tft.setTextSize(5);
+    tft.setTextColor(HX8357_RED);
+    tft.print("Press to Reset");
+
+    unsigned long centiseconds = (millis() - startTime) / 10;
+    unsigned long seconds = centiseconds / 100;
+    centiseconds %= 100;
+
+    tft.setTextSize(8);
+    tft.setTextColor(HX8357_BLUE);
+    tft.setCursor(100, 80);
+    tft.print(String(seconds));
+    tft.print(".");
+    if (centiseconds < 10) {
+      tft.print("0");
+    }
+    tft.print(String(centiseconds));
+    tft.println(" s");
+    reset = 1;
+    stato = 3;
+    startTime = 0;
+  }
+
+  if(buttonState == HIGH && lastButtonState == LOW && reset == 1){
+    startTime = 0;
+    reset = 0;
+    stato = 0;
+    tft.fillRect(0, 60, 480, 320, HX8357_BLACK);
+    tft.setTextSize(8);
+    tft.setTextColor(HX8357_BLUE);
+    tft.setCursor(100, 80);
+    tft.print("0.00 s");
+    tft.setCursor(20, 180);
+    tft.setTextColor(HX8357_RED);
+    tft.setTextSize(5);
+    tft.print("Press to Start");
+  }
+
+  if (stato == 1 && buttonState == HIGH){
+    unsigned long deci = (millis() - startTime) / 100;
+    unsigned long seconds = deci / 10;
+    deci %= 10;
+
+    tft.setTextSize(8);
+    tft.setTextColor(HX8357_WHITE);
+    tft.setCursor(100, 80);
+    tft.print(String(seconds));
+    tft.print(".");
+    tft.print(String(deci));
+    tft.println(" s");
+    delay(50);
+    tft.fillRect(0, 60, 480, 80, HX8357_BLACK);
+  }
 }

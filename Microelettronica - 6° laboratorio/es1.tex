@@ -1,0 +1,141 @@
+Il primo esperimento ha lo scopo di introdurre le procedure di comando di un display TFT mediante scheda Arduino DUE. Si scriverà un programma che realizzi un semplice cronometro a tre stati di funzionamento
+\begin{itemize}
+    \item \textbf{Stato 0:} il circuito attende la pressione del tasto \textit{T} visualizzando il tempo "0.00 s". Durante l'attesa viene visualizzata la scritta "Press to Start"
+    \item \textbf{Stato 1:} nel momento in cui il tasto \textit{T} viene premuto, il timer comincia a misurare il tempo, a step di 50 ms. La misura finisce quando il tasto viene rilasciato. Durante la misura appare la scritta “Release to Stop”
+    \item \textbf{Stato 2:} quando il tasto T viene rilasciato, il timer si ferma, e visualizza il tempo totale durante cui il tasto è rimasto premuto. Viene inoltre visualizzata la scritta “Press to Reset”. Una ulteriore pressione del tasto \textit{T} resetta il timer e fa tornare il circuito allo stato 0
+\end{itemize}
+I componenti necessari a questa esperienza sono:
+\begin{itemize}
+    \item Scheda Arduino DUE
+    \item Breadboard e cavi
+    \item Display TFT 3.5" 320x480, \textit{HX8357} Adafruit
+    \item Interruttore a bottone, FSM2JART, Cod. RS 745-5185
+    \item Resistenza $R=10\text{ k}\Omega,0.25\text{ W}$
+\end{itemize}
+Il circuito è alimentato mediante porta USB del PC, la quale eroga circa $(\sim 5 V)$.
+\subsection{Codice}
+La libreria \texttt{Adafruit\_HX8357.h}, insieme alle librerie \texttt{Adafruit\_GFX.h} e \texttt{SPI.h} permette alla scheda arduino di comunicare con il Display HX8357 tramite le funzioni dedicate.
+\begin{lstlisting}[frame=single, language=Arduino]
+#include <SPI.h>
+#include "Adafruit_GFX.h"
+#include "Adafruit_HX8357.h"
+
+#define TFT_CS 10
+#define TFT_DC 9
+
+Adafruit_HX8357 tft = Adafruit_HX8357(TFT_CS, TFT_DC, -1); 
+// TFT_RST set to -1 to tie it to Arduino's reset
+
+#define buttonPin 2
+
+int buttonState = LOW;
+int lastButtonState = LOW;
+
+unsigned long startTime = 0;
+
+int stato = 0;
+int reset = 0;
+
+void setup(){  
+  pinMode(buttonPin, INPUT);
+  tft.begin();
+  tft.setRotation(3);
+  tft.fillScreen(HX8357_BLACK);
+  tft.setTextColor(HX8357_GREEN);
+  tft.setTextSize(8);
+  tft.setCursor(100,0);
+  tft.println("TIMER");
+  tft.setTextColor(HX8357_BLUE);
+  tft.setCursor(100, 80);
+  tft.print("0.00 s");
+  tft.setCursor(20, 180);
+  tft.setTextColor(HX8357_RED);
+  tft.setTextSize(5);
+  tft.print("Press to Start");
+}
+\end{lstlisting}
+\begin{lstlisting}[frame=single, language=Arduino]
+void loop() {
+  buttonState = digitalRead(buttonPin);
+  if(buttonState == HIGH && lastButtonState == LOW && reset == 1){
+    startTime = 0;
+    reset = 0;
+    stato = 0;
+    tft.fillRect(0, 60, 480, 320, HX8357_BLACK);
+    tft.setTextSize(8);
+    tft.setTextColor(HX8357_BLUE);
+    tft.setCursor(100, 80);
+    tft.print("0.00 s");
+    tft.setCursor(20, 180);
+    tft.setTextColor(HX8357_RED);
+    tft.setTextSize(5);
+    tft.print("Press to Start");
+  }
+\end{lstlisting}
+\clearpage
+\begin{lstlisting}[frame=single, language=Arduino]
+  if (buttonState == HIGH && lastButtonState == LOW && stato == 0){
+    lastButtonState = buttonState;
+    stato = 1;
+    
+    if(startTime == 0){
+      startTime = millis();
+    }
+    
+    tft.fillRect(0, 60, 480, 320, HX8357_BLACK);
+    tft.setCursor(20, 180);
+    tft.setTextSize(5);
+    tft.setTextColor(HX8357_RED);
+    tft.print("Release to Stop");
+  }
+  if (stato == 1 && buttonState == HIGH){
+    unsigned long centiseconds = (millis() - startTime) / 10;
+    unsigned long seconds = centiseconds / 100;
+    centiseconds %= 100;
+
+    tft.setTextSize(8);
+    tft.setTextColor(HX8357_BLUE);
+    tft.setCursor(100, 80);
+    tft.print(String(seconds));
+    tft.print(".");
+    if (centiseconds < 10) {
+      tft.print("0");
+    }
+    tft.print(String(centiseconds));
+    tft.println(" s");
+    delay(50);
+    tft.fillRect(0, 60, 480, 80, HX8357_BLACK);
+  }
+\end{lstlisting}
+\clearpage
+\begin{lstlisting}[frame=single, language=Arduino]
+  if (buttonState == LOW && lastButtonState == HIGH){
+    lastButtonState = buttonState;
+
+    tft.fillRect(0, 60, 480, 320, HX8357_BLACK);
+    tft.setCursor(20, 180);
+    tft.setTextSize(5);
+    tft.setTextColor(HX8357_RED);
+    tft.print("Press to Reset");
+
+    unsigned long centiseconds = (millis() - startTime) / 10;
+    unsigned long seconds = centiseconds / 100;
+    centiseconds %= 100;
+
+    tft.setTextSize(8);
+    tft.setTextColor(HX8357_BLUE);
+    tft.setCursor(100, 80);
+    tft.print(String(seconds));
+    tft.print(".");
+    if (centiseconds < 10) {
+      tft.print("0");
+    }
+    tft.print(String(centiseconds));
+    tft.println(" s");
+    reset = 1;
+    stato = 3;
+    startTime = 0;
+  }
+}
+\end{lstlisting}
+E' possibile apprezzare il funzionamento del circuito dal video al \href{}{seguente link errato} 
