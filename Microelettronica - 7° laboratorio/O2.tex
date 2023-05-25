@@ -1,0 +1,43 @@
+Scrivere il codice che permette di misurare la concentrazione di ossigeno nel sangue, valutando il rapporto R tra l’assorbimento della componente rossa e infrarossa, secondo la formula seguente
+\begin{equation}
+    R=\frac{\left(\frac{AC}{DC}\right)_{RED}}{\left(\frac{AC}{DC}\right)_{IR}}=\frac{\frac{\left(V_{\text{max},RED}-V_{\text{min},RED}\right)}{V_{\text{min},RED}}}{\frac{\left(V_{\text{max},IR}-V_{\text{min},IR}\right)}{V_{\text{min},IR}}}
+\end{equation}
+A partire da R, è possibile calcolare il livello di saturazione utilizzando la formula riportata in Figura \ref{fig:GraphO2}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{GraphO2.png}
+    \caption{$SpO_2$ pulse oximeter}
+    \label{fig:GraphO2}
+\end{figure}
+\begin{lstlisting}[frame=single, language=Arduino]
+float findO2(int array[]){
+    int samples = 1000;
+    int IR[samples];
+    int RED[samples];
+    digitalWrite(PinIR,HIGH);
+    delay(250);
+    for(int i = 0; i < samples; i++){
+        IR[i] = analogRead(sensorPin);
+        delay(1);
+    }
+    digitalWrite(PinIR,LOW);
+    delay(100);
+    digitalWrite(PinRED,HIGH);
+    delay(250);
+    for(int i = 0; i < samples; i++){
+        RED[i] = analogRead(sensorPin);
+        delay(1);
+    }
+    digitalWrite(PinRED,LOW);
+
+    int IRmax = findmax(IR) * 3.3 / 4095;
+    int IRmin = findmin(IR) * 3.3 / 4095;
+    int REDmax = findmax(RED) * 3.3 / 4095;
+    int REDmin = findmin(RED) * 3.3 / 4095; 
+
+    float R = ((REDmax - REDmin)/REDmin) / ((IRmax - IRmin) / IRmin);
+    float O2 = 97.94 + 1.15 * R;
+
+    return O2;
+}
+\end{lstlisting}

@@ -1,20 +1,45 @@
-Nel secondo esperimento si vuole realizzare una semplice stazione di monitoraggio ambientale basata su scheda Arduino, display TFT, sensore analogico di umidità e sensori digitali $I^2C$ di temperatura e luminosità.  
-
-
-
-Per questo esperimento sono stati utilizzati i seguenti componenti:
+Nel secondo esperimento si vuole realizzare una semplice stazione di monitoraggio ambientale gestota dalla scheda Arduino Due che tramite un display TFT, riporta i dati da sensori analogici di umidità e temperatura e sensori digitali $I^2C$ di temperatura e luminosità. Per questo esperimento sono stati utilizzati i seguenti componenti:
 \begin{itemize}
     \item Sensore di temperatura analogico, codice \textit{TMP36}, Analog Devices
     \item Sensore di umidità analogico, codice \textit{HIH-5030-001}, Honeywell
     \item Sensore di temperatura digitale, codice \textit{DS1621}, Maxim
     \item Sensore di luce ambientale, codice \textit{TSL2561}, TAOS
     \item Display TFT 3.5" 320x480, \textit{HX8357} Adafruit
-    \item Scheda Arduino DUE
-    \item Breadboard e cavi
-    \item Interruttore
+    \item Scheda Arduino DUE, breadboard e cavi
+    \item Interruttore e resistenza $R=10\text{ k}\Omega$
 \end{itemize}
-Il circuito è alimentato mediante porta USB del PC, la quale eroga circa $(\sim 5 V)$. 
-La scheda Arduino due ha due bus $I^2C$, utilizzeremo i pin 20(SDA) e 21(SCL).
+Il circuito è alimentato mediante porta USB del PC, la quale eroga circa $(\sim 5 V)$. La scheda Arduino due ha due bus $I^2C$, utilizzeremo i pin 20(SDA) e 21(SCL).
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{.5\textwidth}
+      \centering
+      \includegraphics[width=.8\linewidth]{images/DS1621.png}
+      \captionof{figure}{Pinout sensore DS1621}
+      \label{fig:DS1621}
+    \end{minipage}%
+    \begin{minipage}{.5\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{images/TSL2561.png}
+      \captionof{figure}{Pinout sensore TSL2561}
+      \label{fig:TSL2561}
+    \end{minipage}
+\end{figure}
+Abbiamo collegato a GND i pin $A_0,A_1,A_2$ del sensore DS1621 in modo che il suo indirizzo sia \texttt{0x48}. Lasciando flottante il pin \texttt{ADDR SEL} del sensore TSL2561 il suo indirizzo è \texttt{0x39}.
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{.5\textwidth}
+      \centering
+      \includegraphics[width=.8\linewidth]{images/TMP36.png}
+      \captionof{figure}{Pinout sensore TMP36}
+      \label{fig:DS1621}
+    \end{minipage}%
+    \begin{minipage}{.5\textwidth}
+      \centering
+      \includegraphics[width=.8\linewidth]{images/HIH-5030.png}
+      \captionof{figure}{Pinout sensore HIH-5030}
+      \label{fig:TSL2561}
+    \end{minipage}
+\end{figure}
 \subsection{Codice - interfaccia grafica}
 Per il funzionamento del Display HX8357 con Arduino è necessario importare le librerie \texttt{Adafruit\_HX8357.h}, \texttt{Adafruit\_GFX.h} e \texttt{SPI.h}. Per comunicare con i dispositivi $I^2C$ è necessario utilizzare la libreria \texttt{Wire.h}. 
 \begin{lstlisting}[frame=single, language=Arduino]
@@ -36,14 +61,12 @@ Adafruit_HX8357 tft = Adafruit_HX8357(TFT_CS, TFT_DC, -1);
 // TFT_RST set to -1 to tie it to Arduino's reset
 
 #define buttonPin 2
-\end{lstlisting}
-Variabili globali
-\begin{lstlisting}[frame=single, language=Arduino]
+
 bool pulsante_precedente_alto = LOW;
 bool stateButton = LOW;
-
 int stato = 0;
 int stato_precedente = 0;
+
 float temperatura_precedente_analog = 0;
 \end{lstlisting}
 \begin{lstlisting}[frame=single, language=Arduino]
@@ -52,24 +75,24 @@ void setup(){
     Wire.begin();
 
     // Configurazione del sensore di temperatura digitale DS1621
-    Wire.beginTransmission(TEMP_DEV_ID);
-    Wire.write(0xAC);
-    Wire.write(0x02);
+    Wire.beginTransmission(TEMP_DEV_ID); // Connect
+    Wire.write(0xAC);   // Access config
+    Wire.write(0x02);   // Set for continuos conversion
     Wire.endTransmission();
 
     Wire.beginTransmission(TEMP_DEV_ID);
-    Wire.write(0xEE);
+    Wire.write(0xEE);   // Start conversion
     Wire.endTransmission();
 
     // Configurazione del sensore di luce digitale TSL2561
     Wire.beginTransmission(LIGHT_DEV_ID);
-    Wire.write(0x00);
-    Wire.write(0x03);
+    Wire.write(0x00);   // Access Configuration options
+    Wire.write(0x03);   // Sets power up
     Wire.endTransmission();
 
     Wire.beginTransmission(LIGHT_DEV_ID);
-    Wire.write(0x81);
-    Wire.write(0x02);
+    Wire.write(0x81);   // Command to se timing
+    Wire.write(0x02);   // Low Gain (1x), 402ms (default)
     Wire.endTransmission();
 
     // configurazione del Display TFT
@@ -81,7 +104,7 @@ void setup(){
     attachInterrupt(digitalPinToInterrupt(2),change_state,RISING);
 }
 \end{lstlisting}
-Funzione interrupt
+Funzione interrupt necessaria per cambiare quale sensore si vuole visualizzare. 
 \begin{lstlisting}[frame=single, language=Arduino]
 void change_state(){
   stato++;
@@ -89,6 +112,7 @@ void change_state(){
     stato = 0;
 }
 \end{lstlisting}
+\clearpage
 \begin{lstlisting}[frame=single, language=Arduino]
 void loop(){
     switch(stato){
@@ -152,9 +176,9 @@ void loop(){
     delay(500);
 }
 \end{lstlisting}
-\clearpage
 \subsection{Codice - lettura sensori}
-Qui di seguito riportiamo le funzioni che leggono i dati dai vari sensori. Per le letture dai sensori analogici abbiamo scelto di impostare il DAC di Arduino Due a 12 bit, in modo da avere una risoluzione maggiore con 4096 livelli
+Qui di seguito sono riportate le funzioni che leggono i dati dai vari sensori. Per le letture dai sensori analogici si è deciso di impostare il DAC di Arduino Due a 12 bit, in modo da avere una risoluzione maggiore con 4096 livelli.\\\\
+Il sensore TMP36 restituisce in output una tensione proporzionale alla temperatura.
 \begin{lstlisting}[frame=single, language=Arduino, caption = Lettura dal sensore TMP36, label = lst:AnalogTemp]
 int AnalogTemperature(int pin) {
     float analogValue = analogRead(pin);
@@ -162,8 +186,8 @@ int AnalogTemperature(int pin) {
     return temperatura;
 }
 \end{lstlisting}
-Per ricavare il valore di umidità e correggerlo in base alla temperatura dal sensore a abbiamo utilizzato le formule fornite dal datasheet del componente
-\begin{lstlisting}[frame=single, language=Arduino]
+Per ottenere il valore di umidità corretto è necessario modificare la lettura del sensore in base alla temperatura utilizzando le formule fornite dal datasheet del componente
+\begin{lstlisting}[frame=single, language=Arduino, caption = Lettura dal sensore HIH-5030, label = lst:AnalogHum]
 int AnalogHumidity(int pin) {
     float analogValue = analogRead(pin);
     float rhvoltage = (analogValue/4095.0)*3.3; // 12 bit DAC
@@ -174,10 +198,8 @@ int AnalogHumidity(int pin) {
 \end{lstlisting}
 \begin{lstlisting}[frame=single, language=Arduino]
 int DigitalTemperature(){
-    int firstByte;
-    int secondByte;
+    int firstByte, secondByte;
     float temp = 0;
-
     Wire.beginTransmission(DEV_ID);
     Wire.write(0xAA); // Temperature register   
     Wire.endTransmission();
@@ -187,10 +209,7 @@ int DigitalTemperature(){
     secondByte = Wire.read(); // read second byte
 
     temp = firstByte;
-
-    if(secondByte){
-        temp += 0.5; 
-    }
+    if(secondByte)  temp += 0.5;
 
     return temp;
 }
@@ -201,14 +220,14 @@ int DigitalLight(){
     int lux = 0;
 
     Wire.beginTransmission(DEV_ID2);
-    Wire.write(0x8C); // Temperature register
+    Wire.write(0x8C);   // Access LSB of ADC0
     Wire.endTransmission();
     Wire.requestFrom(DEV_ID2, 1);
 
     firstByte = Wire.read(); // read first byte
 
     Wire.beginTransmission(DEV_ID2);
-    Wire.write(0x8D); // Temperature register
+    Wire.write(0x8D);   // Access MSB of ADC0
     Wire.endTransmission();
     Wire.requestFrom(DEV_ID2, 1);
 
@@ -219,4 +238,4 @@ int DigitalLight(){
     return lux;
 }
 \end{lstlisting}
-E' possibile apprezzare il funzionamento del circuito dal video al \href{https://mediaspace.unipd.it/media/Esperimento+2.1/1_ewlxzlyv}{seguente link errato}
+E' possibile apprezzare il funzionamento del circuito dal video al \href{https://mediaspace.unipd.it/media/Esperimento+2/1_o92nu58e}{seguente link}

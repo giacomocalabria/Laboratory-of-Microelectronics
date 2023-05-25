@@ -1,0 +1,53 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{xparse}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\include{arduinoLanguage}
+\cfoot{}
+\lfoot{Università degli Studi di Padova, Laboratorio di Microelettronica, AA 2022-2023}
+\rfoot{\thepage}
+
+%\hypersetup{
+%    colorlinks=true,
+%    linkcolor=blue,
+%    filecolor=magenta,      https://it.overleaf.com/project/646f3dfe8c7d27e771d1b515#
+%    urlcolor=cyan,
+%    pdftitle={Overleaf Example},
+%    pdfpagemode=FullScreen,
+%    }
+
+\title{Esperienza di laboratorio\\\textbf{Arduino DUE\\Heart Rate Monitor}}
+\author{Gruppo A6\\Giacomo Calabria - 2007964\\Daniele Venturini - 1195858}
+\date{26 May 2023}
+
+\begin{document}
+    \maketitle
+    \tableofcontents
+    \clearpage
+    \section{INTRODUZIONE}
+    \input{Introduction}
+    
+    \section{Stadio analogico}
+    \input{analog}
+    \clearpage
+    
+    \section{Stadio digitale Arduino}
+    \input{digital}
+    \clearpage
+    
+    \section{Misura dei BPM}
+    \input{bpm}
+    \clearpage
+    
+    \section{Misura saturazione $O_2$}
+    \input{O2}
+\end{document}

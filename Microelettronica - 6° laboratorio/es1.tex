@@ -6,11 +6,9 @@ Il primo esperimento ha lo scopo di introdurre le procedure di comando di un dis
 \end{itemize}
 I componenti necessari a questa esperienza sono:
 \begin{itemize}
-    \item Scheda Arduino DUE
-    \item Breadboard e cavi
+    \item Scheda Arduino DUE, breadboard e cavi.
     \item Display TFT 3.5" 320x480, \textit{HX8357} Adafruit
-    \item Interruttore a bottone, FSM2JART, Cod. RS 745-5185
-    \item Resistenza $R=10\text{ k}\Omega,0.25\text{ W}$
+    \item Interruttore a bottone, FSM2JART e resistenza $R=10\text{ k}\Omega$
 \end{itemize}
 Il circuito è alimentato mediante porta USB del PC, la quale eroga circa $(\sim 5 V)$.
 \subsection{Codice}
@@ -27,22 +25,24 @@ Adafruit_HX8357 tft = Adafruit_HX8357(TFT_CS, TFT_DC, -1);
 // TFT_RST set to -1 to tie it to Arduino's reset
 
 #define buttonPin 2
-
-int buttonState = LOW;
-int lastButtonState = LOW;
-
-unsigned long startTime = 0;
-
+\end{lstlisting}
+\clearpage
+\begin{lstlisting}[frame=single, language=Arduino]
+bool buttonState = LOW;
+bool lastButtonState = LOW;
 int stato = 0;
 int reset = 0;
 
+unsigned long startTime = 0;
+
 void setup(){  
   pinMode(buttonPin, INPUT);
-  tft.begin();
-  tft.setRotation(3);
+  
+  tft.begin(); // Inizializzazione display
+  tft.setRotation(3); //Orientamento orizzontale
   tft.fillScreen(HX8357_BLACK);
   tft.setTextColor(HX8357_GREEN);
-  tft.setTextSize(8);
+  tft.setTextSize(8); 
   tft.setCursor(100,0);
   tft.println("TIMER");
   tft.setTextColor(HX8357_BLUE);
@@ -61,7 +61,7 @@ void loop() {
     startTime = 0;
     reset = 0;
     stato = 0;
-    tft.fillRect(0, 60, 480, 320, HX8357_BLACK);
+    tft.fillRect(0, 60, 480, 320, HX8357_BLACK); 
     tft.setTextSize(8);
     tft.setTextColor(HX8357_BLUE);
     tft.setCursor(100, 80);
@@ -138,4 +138,4 @@ void loop() {
   }
 }
 \end{lstlisting}
-E' possibile apprezzare il funzionamento del circuito dal video al \href{}{seguente link errato} 
+E' possibile apprezzare il funzionamento del circuito dal video al \href{https://mediaspace.unipd.it/media/Esperimento+1/1_e1cn00nn}{seguente link} 
