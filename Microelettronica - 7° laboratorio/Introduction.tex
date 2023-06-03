@@ -1,7 +1,7 @@
-In questa esercitazione si vuole realizzare un cardiofrequenzimetro e pulsossimetro basato su LED infrarosso, LED rosso, fotodiodo, circuito analogico di condizionamento del segnale, scheda Arduino e display.
+Lo scopo di questa esperienza è quello di realizzare un cardiofrequenzimetro e plussometro basato su LED infrarosso, LED rosso, fotodiodo, circuito analogico di condizionamento del segnale, scheda Arduino e display.
 \subsubsection*{Strumentazione necessaria:}
 \begin{itemize}
-    \item Computer con software Arduino IDE + Cavo USB - Type A
+    \item Computer con software Arduino IDE + Cavo USB
     \item Scheda Arduino Due, breadboard e cavi
     \item Display TFT 3.5" 320x480, \textit{HX8357} Adafruit
 \end{itemize}
@@ -23,5 +23,5 @@ In Figura \ref{fig:HX8357_pinout} è stato riportato il pinout del Display HX835
     \caption{Pinout del Display HX8357}
     \label{fig:HX8357_pinout}
 \end{figure}
-\noindent Il display viene controllato mediante l'interfaccia/protocollo Serial Peripheral Interface (SPI) il quale richiede il collegamento dei pin di alimentazione: \texttt{VCC} ($3.3$V) e \texttt{GND} delle linee comuni:\texttt{MISO}, \texttt{MOSI} e \texttt{SCK} e di una linea per il \textbf{chip select} (\texttt{CS})\\\\
-Il Display HX8357 richiede il collegamento di un ulteriore pin \texttt{D/C} per la selezione della modalità data/command. Per i pin \texttt{MISO}, \texttt{MOSI} e \texttt{SCK} utilizziamo l'header \texttt{SPI} integrato nella scheda.
+\noindent Il display viene controllato mediante l'interfaccia/protocollo Serial Peripheral Interface (SPI) il quale richiede il collegamento dei pin di alimentazione: \texttt{VCC} ($3.3$V) e \texttt{GND} delle linee comuni: \texttt{MISO}, \texttt{MOSI} e \texttt{SCK} e di una linea per il \textbf{chip select} (\texttt{CS})\\\\
+Il Display HX8357 richiede il collegamento di un ulteriore pin \texttt{D/C} per la selezione della modalità data/command. Per i pin \texttt{MISO}, \texttt{MOSI} e \texttt{SCK} si utilizza l'header \texttt{SPI} integrato nella scheda.

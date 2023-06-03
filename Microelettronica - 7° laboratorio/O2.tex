@@ -1,4 +1,4 @@
-Scrivere il codice che permette di misurare la concentrazione di ossigeno nel sangue, valutando il rapporto R tra l’assorbimento della componente rossa e infrarossa, secondo la formula seguente
+Per la misurazione della saturazione di ossigeno del sange è necessario implementare una formula per il calcolo. Essa si basa sulle differenze di tensione rilevate con luce rossa e con luce IR. Si valuta il rapporto $R$ tra l’assorbimento della componente rossa e infrarossa, secondo la formula seguente
 \begin{equation}
     R=\frac{\left(\frac{AC}{DC}\right)_{RED}}{\left(\frac{AC}{DC}\right)_{IR}}=\frac{\frac{\left(V_{\text{max},RED}-V_{\text{min},RED}\right)}{V_{\text{min},RED}}}{\frac{\left(V_{\text{max},IR}-V_{\text{min},IR}\right)}{V_{\text{min},IR}}}
 \end{equation}
@@ -30,14 +30,20 @@ float findO2(int array[]){
     }
     digitalWrite(PinRED,LOW);
 
-    int IRmax = findmax(IR) * 3.3 / 4095;
-    int IRmin = findmin(IR) * 3.3 / 4095;
-    int REDmax = findmax(RED) * 3.3 / 4095;
-    int REDmin = findmin(RED) * 3.3 / 4095; 
+    float k = 0.00080586;
+
+    float IRmax = findmax(IR) * k;
+    float IRmin = findmin(IR) * k;
+    float REDmax = findmax(RED) * k;
+    float REDmin = findmin(RED) * k; 
 
     float R = ((REDmax - REDmin)/REDmin) / ((IRmax - IRmin) / IRmin);
     float O2 = 97.94 + 1.15 * R;
-
+    
+    tft.setCursor(30, 280);
+    tft.print("O2: ");
+    tft.print(O2);
+    
     return O2;
 }
 \end{lstlisting}

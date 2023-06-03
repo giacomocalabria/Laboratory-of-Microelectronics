@@ -1,8 +1,10 @@
-A partire dall’array acquisito, scrivere un codice che permetta di misurare la frequenza cardiaca e visualizzarne il corrispondente valore sul display
+Utilizzando l'array acquisito si è scritto un codice per misurare la frequenza cardiaca, viene visualizzato il corrispondente valore sul display.\\\\
+Anzitutto viene definita la soglia \textit{treshhold} con la quale si identificano i picchi del grafico. Dovendo contare i picchi e non gli attraversamenti della soglia si è deciso di creare una funzione apposita che una volta superata la soglia scorre l'array fintantochè i valori sono sopra la soglia.\\\\
+Contando il numero di picchi e l'intervallo dal primo all' ultimo picco, si ricavano ricavato i bpm e si disegna una linea rappresentativa della soglia.
 \begin{lstlisting}[frame=single, language=Arduino]
 int findBPM(int array[]){
-    int min = findmin(array);
-    int threshold = (findmax(array) - min) / 1.5 + min;
+    int avg = mean(array);
+    int threshold = avg - 20;
     int peaks = 0;
     int timeOfPeaks[arraySize/2];
     for(int i = 0; i < arraySize; i++){
@@ -15,11 +17,17 @@ int findBPM(int array[]){
             }
         }
     }
-    FistPeaks = timeOfPeaks[0] * 20;
-    LastPeaks = timeOfPeaks[peaks-1] * 20;
+    int FirstPeaks = timeOfPeaks[0] * 20;
+    int LastPeaks = timeOfPeaks[peaks-1] * 20;
+    float bps = peaks / ((LastPeaks - FirstPeaks)/1000.0);
+    int bpm = bps * 60;
 
-    TimeInterval = LastPeaks - FirstPeaks; // in microseconds
-    
-    return peaks / ((TimeInterval) / 60000);
+    tft.setCursor(30, 240);
+    tft.print("BPM: ");
+    tft.print(bpm);
+    dispThreshold = map(threshold, min, max, graphHeight, 0);
+    tft.drawLine(0,dispThreshold,dispWidth,dispThreshold,HX8357_RED);
+
+    return bpm;
 }
 \end{lstlisting}
